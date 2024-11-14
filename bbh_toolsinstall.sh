@@ -1,41 +1,3 @@
-#!/bin/bash
-
-# Update system and install core dependencies
-echo "Updating system and installing core dependencies..."
-sudo apt update -y && sudo apt upgrade -y
-sudo apt install -y git curl wget python3 python3-pip golang
-
-# Set up Go environment (if Go is not already set up)
-export GOPATH=$HOME/go
-export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-mkdir -p $GOPATH
-
-# Install NMap
-echo "Installing NMap..."
-sudo apt install -y nmap
-
-# Install JSLinkFinder
-echo "Installing JSLinkFinder..."
-git clone https://github.com/GerbenJavado/LinkFinder.git
-cd LinkFinder
-pip3 install -r requirements.txt
-sudo python3 setup.py install
-cd ..
-
-# Install anew
-echo "Installing anew..."
-git clone https://github.com/tomnomnom/anew.git
-cd anew
-go build
-sudo mv anew /usr/local/bin
-cd ..
-
-# Install Waymore
-echo "Installing Waymore..."
-git clone https://github.com/xnl-h4ck3r/waymore.git
-cd waymore
-pip3 install -r requirements.txt
-cd ..
 
 #!/bin/bash
 
@@ -59,11 +21,11 @@ git clone https://github.com/GerbenJavado/LinkFinder.git
 cd LinkFinder
 
 # Install jsbeautifier with --break-system-packages flag to avoid virtual env issues
-echo "Installing jsbeautifier..."
+echo "Installing jsbeautifier and other Python dependencies..."
 python3 -m pip install jsbeautifier --break-system-packages
-
 pip3 install -r requirements.txt
 sudo python3 setup.py install
+sudo mv linkfinder.py /usr/local/bin/linkfinder
 cd ..
 
 # Install anew
@@ -79,6 +41,10 @@ echo "Installing Waymore..."
 git clone https://github.com/xnl-h4ck3r/waymore.git
 cd waymore
 pip3 install -r requirements.txt
+# Make waymore globally accessible
+echo -e '#!/bin/bash\npython3 /usr/local/bin/waymore/waymore.py "$@"' | sudo tee /usr/local/bin/waymore > /dev/null
+sudo chmod +x /usr/local/bin/waymore
+sudo cp -r waymore /usr/local/bin/
 cd ..
 
 # Install Subfinder
