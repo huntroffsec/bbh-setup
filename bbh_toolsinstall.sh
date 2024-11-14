@@ -17,17 +17,17 @@ sudo apt install -y nmap
 # Install JSLinkFinder
 echo "Installing JSLinkFinder..."
 git clone https://github.com/GerbenJavado/LinkFinder.git
-cd LinkFinder || exit
+cd LinkFinder
 
 # Install Python dependencies for LinkFinder with --break-system-packages
 echo "Installing dependencies for LinkFinder..."
 python3 -m pip install jsbeautifier --break-system-packages
 pip3 install -r requirements.txt
 
-# Move linkfinder.py to /usr/local/bin/LinkFinder and create a wrapper for global access
-sudo mkdir -p /usr/local/bin/LinkFinder
-sudo mv linkfinder.py /usr/local/bin/LinkFinder/
-echo -e '#!/bin/bash\npython3 /usr/local/bin/LinkFinder/linkfinder.py "$@"' | sudo tee /usr/local/bin/linkfinder > /dev/null
+# Make linkfinder.py globally accessible by creating a symlink
+sudo cp linkfinder.py /usr/local/bin/linkfinder.py
+sudo chmod +x /usr/local/bin/linkfinder.py
+echo -e '#!/bin/bash\npython3 /usr/local/bin/linkfinder.py "$@"' | sudo tee /usr/local/bin/linkfinder > /dev/null
 sudo chmod +x /usr/local/bin/linkfinder
 cd ..
 
@@ -41,7 +41,7 @@ fi
 # Install anew
 echo "Installing anew..."
 git clone https://github.com/tomnomnom/anew.git
-cd anew || exit
+cd anew
 go build
 sudo mv anew /usr/local/bin
 cd ..
@@ -49,15 +49,15 @@ cd ..
 # Install Waymore
 echo "Installing Waymore..."
 git clone https://github.com/xnl-h4ck3r/waymore.git
-cd waymore || exit
+cd waymore
 
 # Install Python dependencies for Waymore
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt --break-system-packages
 
-# Move waymore to /usr/local/bin and create a wrapper for global access
-sudo mkdir -p /usr/local/bin/waymore
-sudo cp -r * /usr/local/bin/waymore
-echo -e '#!/bin/bash\npython3 /usr/local/bin/waymore/waymore.py "$@"' | sudo tee /usr/local/bin/waymore > /dev/null
+# Make waymore.py globally accessible by creating a symlink
+sudo cp waymore.py /usr/local/bin/waymore.py
+sudo chmod +x /usr/local/bin/waymore.py
+echo -e '#!/bin/bash\npython3 /usr/local/bin/waymore.py "$@"' | sudo tee /usr/local/bin/waymore > /dev/null
 sudo chmod +x /usr/local/bin/waymore
 cd ..
 
@@ -71,7 +71,7 @@ fi
 # Install Subfinder
 echo "Installing Subfinder..."
 git clone https://github.com/projectdiscovery/subfinder.git
-cd subfinder/v2/cmd/subfinder || exit
+cd subfinder/v2/cmd/subfinder
 go build
 sudo mv subfinder /usr/local/bin
 cd ../../..
@@ -79,7 +79,7 @@ cd ../../..
 # Install HTTPX
 echo "Installing HTTPX..."
 git clone https://github.com/projectdiscovery/httpx.git
-cd httpx/cmd/httpx || exit
+cd httpx/cmd/httpx
 go build
 sudo mv httpx /usr/local/bin
 cd ../../..
@@ -87,7 +87,7 @@ cd ../../..
 # Install ffuf
 echo "Installing ffuf..."
 git clone https://github.com/ffuf/ffuf.git
-cd ffuf || exit
+cd ffuf
 go build
 sudo mv ffuf /usr/local/bin
 cd ..
