@@ -54,12 +54,9 @@ cd waymore
 # Install Python dependencies for Waymore
 pip3 install -r requirements.txt --break-system-packages
 
-# Make waymore.py globally accessible by creating a symlink
-sudo cp waymore.py /usr/local/bin/waymore.py
-sudo chmod +x /usr/local/bin/waymore.py
-echo -e '#!/bin/bash\npython3 /usr/local/bin/waymore.py "$@"' | sudo tee /usr/local/bin/waymore > /dev/null
+# Make waymore.py globally accessible by copying and linking
+sudo cp waymore.py /usr/local/bin/waymore
 sudo chmod +x /usr/local/bin/waymore
-cd ..
 
 # Verify Waymore installation
 if command -v waymore > /dev/null; then
@@ -67,6 +64,7 @@ if command -v waymore > /dev/null; then
 else
   echo "Error: Waymore installation failed."
 fi
+cd ..
 
 # Install Subfinder
 echo "Installing Subfinder..."
@@ -97,4 +95,3 @@ echo "Cleaning up unnecessary files..."
 rm -rf LinkFinder anew waymore subfinder httpx ffuf
 
 echo "All tools have been successfully installed and are globally accessible!"
-
