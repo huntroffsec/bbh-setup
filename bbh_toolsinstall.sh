@@ -3,7 +3,7 @@
 # Update system and install core dependencies
 echo "Updating system and installing core dependencies..."
 sudo apt update -y && sudo apt upgrade -y
-sudo apt install -y git curl wget python3 python3-pip golang
+sudo apt install -y git curl wget python3 python3-pip golang apache2 php libapache2-mod-php php-mysql mysql-server unzip
 
 # Set up Go environment if not already set up
 export GOPATH=$HOME/go
@@ -90,8 +90,51 @@ go build
 sudo mv ffuf /usr/local/bin
 cd ..
 
+# Install Dirsearch
+echo "Installing Dirsearch..."
+git clone https://github.com/maurosoria/dirsearch.git
+cd dirsearch
+
+# Make dirsearch.py globally accessible
+sudo cp dirsearch.py /usr/local/bin/dirsearch.py
+sudo chmod +x /usr/local/bin/dirsearch.py
+echo -e '#!/bin/bash\npython3 /usr/local/bin/dirsearch.py "$@"' | sudo tee /usr/local/bin/dirsearch > /dev/null
+sudo chmod +x /usr/local/bin/dirsearch
+
+# Verify Dirsearch installation
+if command -v dirsearch > /dev/null; then
+  echo "Dirsearch installed successfully and is accessible globally as 'dirsearch'."
+else
+  echo "Error: Dirsearch installation failed."
+fi
+cd ..
+
+# Install ezXSS
+echo "Installing ezXSS..."
+git clone https://github.com/ssl/ezXSS.git
+sudo mv ezXSS /var/www/html/ezXSS
+
+# Set permissions for Apache
+sudo chown -R www-data:www-data /var/www/html/ezXSS
+sudo chmod -R 755 /var/www/html/ezXSS
+
+# Enable Apache rewrite module
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+
+# Setup MySQL for ezXSS
+echo "Setting up MySQL for ezXSS..."
+sudo mysql -u root <<MYSQL_SCRIPT
+CREATE DATABASE ezxss;
+CREATE USER 'ezxss_user'@'localhost' IDENTIFIED BY 'ezxss_password';
+GRANT ALL PRIVILEGES ON ezxss.* TO 'ezxss_user'@'localhost';
+FLUSH PRIVILEGES;
+MYSQL_SCRIPT
+
+echo "Database 'ezxss' created with user 'ezxss_user' and password 'ezxss_password'. Update ezXSS config.php with these details."
+
 # Cleanup
 echo "Cleaning up unnecessary files..."
-rm -rf LinkFinder anew waymore subfinder httpx ffuf
+rm -rf LinkFinder anew waymore subfinder httpx ffuf dirsearch
 
-echo "All tools have been successfully installed and are globally accessible!"
+echo "All tools and ezXSS have been successfully installed. Configure ezXSS by editing /var/www/html/ezXSS/config.php!"
